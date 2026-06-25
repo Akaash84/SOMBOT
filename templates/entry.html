@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>SOMBOT - Welcome</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* ===== Background with Gradient + Parallax ===== */
+    @keyframes calmShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    body {
+      margin: 0;
+      overflow: hidden;
+      height: 100vh;
+      perspective: 1000px; /* For subtle 3D parallax */
+    }
+   .calm-gradient {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: 
+    linear-gradient(270deg, rgba(147,197,253,0.6), rgba(167,243,208,0.6), rgba(196,181,253,0.6), rgba(251,207,232,0.6)),
+    url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1950&q=80') center/cover no-repeat;
+  background-blend-mode: overlay;
+  animation: calmShift 30s ease infinite;
+  will-change: transform;
+  z-index: -1;
+}
+
+
+    /* ===== Floating Glass Card ===== */
+    @keyframes floatCard {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    @keyframes fadeInUp {
+      0% { opacity: 0; transform: translateY(20px) scale(0.95); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .fade-in-up { animation: fadeInUp 1s ease-out forwards; }
+
+    .glass-card {
+      background: rgba(255,255,255,0.3);
+      backdrop-filter: blur(20px);
+      border-radius: 2rem;
+      box-shadow: 0 25px 50px rgba(0,0,0,0.2);
+      padding: 4rem 3rem;
+      max-width: 600px;
+      text-align: center;
+      border: 1px solid rgba(255,255,255,0.2);
+      animation: floatCard 6s ease-in-out infinite;
+      transition: box-shadow 0.3s ease, transform 0.3s ease;
+      z-index: 1;
+    }
+    .glass-card:hover {
+      box-shadow: 0 35px 70px rgba(20,184,166,0.5);
+      transform: translateY(-5px) scale(1.02);
+    }
+
+    /* ===== Fancy Button ===== */
+    .fancy-btn {
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(135deg, #0f766e, #14b8a6, #2dd4bf);
+      color: white;
+      font-size: 1.25rem;
+      font-weight: 600;
+      padding: 1rem 4rem;
+      border-radius: 1.5rem;
+      box-shadow: 0 10px 25px rgba(20, 184, 166, 0.5);
+      transition: all 0.4s ease;
+      z-index: 1;
+    }
+    .fancy-btn::before {
+      content: "";
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255,255,255,0.25) 20%, transparent 70%);
+      transform: rotate(25deg);
+      transition: opacity 0.6s ease;
+      opacity: 0;
+      z-index: 0;
+    }
+    .fancy-btn:hover::before {
+      opacity: 1;
+      animation: shimmer 2s infinite linear;
+    }
+    @keyframes shimmer {
+      0% { transform: translate(-50%, -50%) rotate(25deg); }
+      100% { transform: translate(150%, 150%) rotate(25deg); }
+    }
+    .fancy-btn:hover {
+      transform: translateY(-6px) scale(1.1);
+      box-shadow: 0 18px 40px rgba(20, 184, 166, 0.7);
+    }
+    .fancy-btn:active {
+      transform: scale(0.97);
+      box-shadow: 0 10px 20px rgba(20, 184, 166, 0.5);
+    }
+
+    /* ===== Typing Effect ===== */
+    .typing-text {
+      display: inline-block;
+      border-right: 2px solid rgba(20,184,166,0.7);
+      white-space: nowrap;
+      overflow: hidden;
+      animation: typing 3s steps(40, end), blink 0.75s step-end infinite;
+    }
+    @keyframes typing { 0% { width: 0; } 100% { width: 100%; } }
+    @keyframes blink { 50% { border-color: transparent; } }
+
+    /* ===== Particles ===== */
+    .particle {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.2);
+      pointer-events: none;
+      animation: float 20s linear infinite;
+    }
+    @keyframes float {
+      0% { transform: translateY(100vh) translateX(0) scale(0.5); opacity: 0; }
+      50% { opacity: 0.5; }
+      100% { transform: translateY(-50vh) translateX(50vw) scale(1); opacity: 0; }
+    }
+  </style>
+</head>
+<body class="flex justify-center items-center min-h-screen font-sans text-gray-800">
+
+  <!-- Parallax Background -->
+  <div class="calm-gradient"></div>
+
+  <!-- Floating Particles -->
+  <script>
+    const numParticles = 40;
+    const particles = [];
+    for(let i=0;i<numParticles;i++){
+      const p = document.createElement('div');
+      p.className = 'particle';
+      const size = Math.random()*12+6;
+      p.style.width = `${size}px`;
+      p.style.height = `${size}px`;
+      p.style.left = `${Math.random()*100}vw`;
+      p.style.animationDuration = `${20+Math.random()*20}s`;
+      p.style.animationDelay = `${Math.random()*10}s`;
+      document.body.appendChild(p);
+      particles.push(p);
+    }
+
+    // Mouse-interactive parallax & particle effect
+    document.addEventListener('mousemove', (e) => {
+      const cx = window.innerWidth / 2;
+      const cy = window.innerHeight / 2;
+      const dx = (e.clientX - cx) / cx;
+      const dy = (e.clientY - cy) / cy;
+
+      // Parallax background
+      const bg = document.querySelector('.calm-gradient');
+      bg.style.transform = `translate(${dx*20}px, ${dy*20}px) scale(1.05)`;
+
+      // Particle movement
+      particles.forEach(p => {
+        const rect = p.getBoundingClientRect();
+        const px = (e.clientX - rect.left) * 0.0005;
+        const py = (e.clientY - rect.top) * 0.0005;
+        p.style.transform = `translate(${px*100}px, ${py*100}px)`;
+      });
+    });
+  </script>
+
+  <!-- Glass Card -->
+  <div class="glass-card fade-in-up">
+    <h1 class="text-5xl font-extrabold text-teal-700 mb-6 tracking-wide title-text">🌿 Welcome to SOMBOT  </h1>
+    <h6 class=" font-semibold text-teal-600 mb-4 subtitle-text fade-in-up" style="animation-delay:1s">State Of Mind Bot</h6>
+    <p class="text-lg text-gray-700 mb-6 subtitle-text typing-text">Your calm and insightful companion for meaningful conversations.</p>
+    <p class="text-gray-700 mb-10 info-text leading-relaxed">
+      SOMBOT listens to your thoughts, understands your mood, and provides thoughtful guidance to help you navigate challenges with clarity and calm.  
+      Whether you need reflection, analysis, or friendly support, SOMBOT is here to accompany you every step of the way.
+    </p>
+    <button id="enterBtn" class="fancy-btn fade-in-up" style="animation-delay:2s">Enter Chat</button>
+  </div>
+
+  <script>
+    document.getElementById("enterBtn").addEventListener("click", () => {
+      window.location.href = "/chat";
+    });
+  </script>
+</body>
+</html>

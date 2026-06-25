@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>SOMBOT - Calm Mode</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* ===== Animated Background Gradient + Stone Image ===== */
+    @keyframes calmShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    body {
+      margin: 0;
+      font-family: sans-serif;
+      overflow: hidden;
+    }
+    .calm-gradient {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background:
+    linear-gradient(270deg, rgba(147,197,253,0.4), rgba(167,243,208,0.4), rgba(196,181,253,0.4), rgba(251,207,232,0.4)),
+    url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1950&q=80') center/cover no-repeat;
+  background-blend-mode: lighten; /* blends image subtly */
+  background-size: cover;
+  animation: calmShift 30s ease infinite;
+  z-index: -1;
+}
+
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .fade-in { animation: fadeIn 0.8s ease-out forwards; }
+    /* ===== Button Transitions & Hover Effects ===== */
+button {
+  transition: all 0.3s ease-in-out;
+}
+
+#sendBtn, #analyseBtn, #resetBtn {
+  position: relative;
+  overflow: hidden;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.4s ease;
+}
+
+#sendBtn:hover, #analyseBtn:hover, #resetBtn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+#sendBtn:active, #analyseBtn:active, #resetBtn:active {
+  transform: scale(0.97);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+/* Optional: Fancy gradient shimmer on Analyse button */
+#analyseBtn::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255,255,255,0.25) 20%, transparent 70%);
+  transform: rotate(25deg);
+  transition: opacity 0.6s ease;
+  opacity: 0;
+  z-index: 0;
+}
+
+#analyseBtn:hover::before {
+  opacity: 1;
+  animation: shimmer 2s infinite linear;
+}
+
+@keyframes shimmer {
+  0% { transform: translate(-50%, -50%) rotate(25deg); }
+  100% { transform: translate(150%, 150%) rotate(25deg); }
+}
+
+  </style>
+</head>
+<body class="flex justify-center items-center min-h-screen text-gray-800">
+
+  <!-- Background -->
+  <div class="calm-gradient"></div>
+
+  <div class="w-[70%] flex flex-col h-[90vh] bg-white/50 backdrop-blur-md rounded-3xl shadow-2xl overflow-hidden z-10 relative">
+    <header class="bg-white/70 backdrop-blur-md shadow px-6 py-4 flex items-center justify-between sticky top-0 z-10">
+      <h1 class="text-2xl font-bold text-teal-700 tracking-wide">🌿 SOMBOT</h1>
+      <div class="flex space-x-3">
+        <button id="analyseBtn" class="px-4 py-2 bg-teal-500 text-white rounded-xl shadow hover:bg-teal-600 transition">
+          Analyse
+        </button>
+        <button id="resetBtn" class="px-4 py-2 bg-rose-400 text-white rounded-xl shadow hover:bg-rose-500 transition">
+          Reset
+        </button>
+      </div>
+    </header>
+
+    <main id="chat-box" class="flex-1 overflow-y-auto px-6 py-6 space-y-4"></main>
+
+    <div class="bg-white/70 backdrop-blur-md p-4 border-t flex items-center space-x-3 shadow-inner">
+      <input id="user-input" type="text" placeholder="Type your message calmly..."
+        class="flex-1 px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-400 shadow-sm" />
+      <button id="sendBtn" class="px-5 py-2 bg-teal-500 text-white font-medium rounded-xl shadow hover:bg-teal-600 transition">
+        Send
+      </button>
+    </div>
+  </div>
+
+  <script>
+    const chatBox = document.getElementById("chat-box");
+    const userInput = document.getElementById("user-input");
+    const sendBtn = document.getElementById("sendBtn");
+    const analyseBtn = document.getElementById("analyseBtn");
+    const resetBtn = document.getElementById("resetBtn");
+
+    function appendMessage(text, from) {
+      const wrapper = document.createElement("div");
+      wrapper.className = "flex flex-col " + (from === "user" ? "items-end" : "items-start") + " fade-in";
+
+      const label = document.createElement("div");
+      label.className = "text-sm font-extrabold mb-1 tracking-wide " + 
+        (from === "user" ? "text-blue-800" : from === "bot" ? "text-teal-800" : "text-emerald-800");
+      label.innerText = from === "user" ? "YOU:" : from === "bot" ? "SOMBOT:" : "📊 ANALYSIS:";
+
+      const bubble = document.createElement("div");
+      bubble.className = (from === "user"
+          ? "bg-blue-100 text-blue-900"
+          : from === "bot"
+          ? "bg-teal-100 text-teal-900"
+          : "bg-emerald-100 text-emerald-900") +
+        " px-4 py-2 rounded-2xl shadow-lg max-w-md whitespace-pre-wrap";
+      bubble.innerText = text;
+
+      wrapper.appendChild(label);
+      wrapper.appendChild(bubble);
+      chatBox.appendChild(wrapper);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    async function sendMessage() {
+      const msg = userInput.value.trim();
+      if (!msg) return;
+      appendMessage(msg, "user");
+      userInput.value = "";
+      const res = await fetch("/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: msg }),
+      });
+      const data = await res.json();
+      appendMessage(data.reply, "bot");
+    }
+
+    sendBtn.onclick = sendMessage;
+    userInput.addEventListener("keypress", (e) => { if (e.key === "Enter") sendMessage(); });
+
+    analyseBtn.onclick = async () => {
+      const res = await fetch("/analyse", { method: "POST" });
+      const data = await res.json();
+      appendMessage(data.analysis, "analysis");
+    };
+
+    resetBtn.onclick = async () => {
+      await fetch("/reset", { method: "POST" });
+      chatBox.innerHTML = "";
+    };
+  </script>
+</body>
+</html>
